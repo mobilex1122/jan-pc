@@ -1,0 +1,21 @@
+{
+  "name": "JanPC",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild src/index.mjs --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.3",
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "esbuild": "0.25.1",
+    "eslint": "^9.22.0",
+    "eslint-plugin-jsdoc": "^50.6.6",
+    "globals": "^16.0.0"
+  }
+}

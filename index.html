@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+        .mono {
+            font-family: monospace;
+        }
+        .c-addr {
+            background-color: yellow;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <button id="step">Step</button><button id="run">Run</button>
+    <div id="registers" class="mono">
+        <span data-reg="0" data-name="IP"></span>
+        <span data-reg="1" data-name="ACC"></span>
+        <span data-reg="2" data-name="R1"></span>
+        <span data-reg="3" data-name="R2"></span>
+        <span data-reg="4" data-name="R3"></span>
+        <span data-reg="5" data-name="R4"></span>
+        <span data-reg="6" data-name="R5"></span>
+        <span data-reg="7" data-name="R6"></span>
+        <span data-reg="8" data-name="R7"></span>
+        <span data-reg="9" data-name="R8"></span>
+        <span data-reg="10" data-name="SP"></span>
+        <span data-reg="11" data-name="FP"></span>
+        <span data-reg="12" data-name="BUS"></span>
+    </div>
+
+    <!--<input type="text" placeholder="address">
+    <button>Inspect</button>
+    <label for="autoInspect">Auto Inspect</label>
+    <input type="checkbox" id="autoInspect">-->
+
+    <div>
+        <span class="mono" id="inspectView"></span>
+    </div>
+
+    <script type="module" src="js/index.mjs"></script>
+</body>
+</html>
