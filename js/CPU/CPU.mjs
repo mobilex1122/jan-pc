@@ -248,12 +248,15 @@ export default class {
     }
 
 
-    run() {
+    run(callback) {
         const returnStatus = this.step();
+        if (callback) {
+            callback()
+        }
         console.log( returnStatus ? "true": "false");
         if (returnStatus != true) {
             setTimeout(() => {
-                this.run();
+                this.run(callback);
             },0)
         } else {
             alert("System Halt!");

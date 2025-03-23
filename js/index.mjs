@@ -1,3 +1,4 @@
+import Asembler from "./Asembler/Asembler.mjs";
 import Bus from "./Bus/Bus.mjs";
 import CPU from "./CPU/CPU.mjs";
 import ConsoleDevice from "./Devices/ConsoleDevice.mjs";
@@ -15,12 +16,25 @@ bus.addDevice(0,new DebugDevice("INDEX 1"));
 bus.addDevice(1,new ConsoleDevice(consoleDiv));
 
 
+
+
+
 const memBuf = new ArrayBuffer(0xFF);
 const mem = new DataView(memBuf);
 
-compileProgram(new Uint8Array(memBuf));
 
-console.log("Program:\n'" + buf2hex(memBuf) + "'");
+//compileProgram(new Uint8Array(memBuf));
+//console.log(buf2hex(memBuf))
+
+const asembler = new Asembler(mem);
+
+
+
+fetch("./asembly/main.asm").then((res) => res.text().then((code) => {
+    asembler.parse(code)
+    console.log(buf2hex(memBuf))
+    document.getElementById("compiler").innerHTML = buf2hex(memBuf)
+}))
 
 
 const cpu = new CPU(mem,bus, false);
@@ -58,7 +72,9 @@ const runBtn = document.getElementById("run");
 runBtn.addEventListener("click", runCPU);
 
 function runCPU() {
-    cpu.run();
+    cpu.run(() => {
+        inspect(null);
+    });
 }
 
 
