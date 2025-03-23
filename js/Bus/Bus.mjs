@@ -16,12 +16,12 @@ export default class Bus {
     }
 
     selectDevice(index) {
-        if (this.devices[this.selectDevice]) {
-            this.devices[this.selectDevice].diselected();
+        if (this.devices[this.selectedDevice] && this.devices[this.selectedDevice].diselected) {
+            this.devices[this.selectedDevice].diselected();
         }
-        this.selectDevice = index;
-        if (this.devices[this.selectDevice]) {
-            this.devices[this.selectDevice].selected();
+        this.selectedDevice = index;
+        if (this.devices[this.selectedDevice]) {
+            this.devices[this.selectedDevice].selected();
         }
     }
 
@@ -49,6 +49,29 @@ export default class Bus {
             return device.read(address);
         } else {
             return this.dummy.read(address);
+        }
+    }
+
+    write16(address,value) {
+        const device = this.devices[this.selectedDevice];
+        if (device != null) {
+            device.write16(address,value);
+        } else {
+            this.dummy.write16(address,value);
+        }
+    }
+
+    /**
+     * Reads from Bus Device
+     * @param {number} address 
+     * @returns {number} Value at that address
+     */
+    read16(address) {
+        const device = this.devices[this.selectedDevice];
+        if (device != null) {
+            return device.read16(address);
+        } else {
+            return this.dummy.read16(address);
         }
     }
 }

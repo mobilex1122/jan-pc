@@ -2,8 +2,8 @@ import I from "./Instructions.mjs";
 import R , {REGCOUNT} from "./Registers.mjs";
 
 /**
- * @typedef {import("../Memory/Memory.mjs")} Memory
- * @typedef {import("../Bus/Bus.mjs")} Bus
+ * @typedef {import("../Memory/Memory.mjs").default} Memory
+ * @typedef {import("../Bus/Bus.mjs").default} Bus
  */
 
 /**
@@ -95,7 +95,7 @@ export default class {
             console.groupEnd();
             return returnState;
         }
-        return this.exec(this.fetch());
+        return this.exec(this.fetch()) ?? false;
         
     }
 
@@ -103,16 +103,33 @@ export default class {
         this.registers.setUint16(address * 2,value);
     }
 
+    setRegister8(address,value) {
+        this.registers.setUint8(address * 2 + 1,value);
+    }
+
     setMem(address,value) {
         this.memory.setUint16(address,value);
     }
 
+    setMem8(address,value) {
+        this.memory.setUint8(address,value);
+    }
+
+
     getMem(address) {
+        return this.memory.getUint8(address);
+    }
+
+    getMem16(address) {
         this.memory.getUint16(address);
     }
 
     getRegister(address) {
         return this.registers.getUint16(address * 2);
+    }
+
+    getRegister8(address) {
+        return this.registers.getUint8(address * 2 + 1);
     }
 
     exec(instruction) {
@@ -141,6 +158,28 @@ export default class {
                 this.setRegister(reg,lit);
                 return;
             }
+
+            case I.MOV_REG_REG: {
+                this.log("Move REG MEM");
+                const regSrc = this.fetch();
+                const regDst = this.fetch();
+                const val = this.getRegister(regSrc);
+                this.setRegister(regDst,val);
+                return;
+            }
+
+            case I.MOV_MEMPNT_REG: {
+                this.log("Move MEM* REG");
+                const regsrc = this.fetch();
+                const reg = this.fetch();
+                const memAdr = this.getRegister(regsrc);
+                const value = this.getMem(memAdr);
+                this.log("Set Reg: " +reg + " to " + value);
+
+                this.setRegister(reg,value);
+                return;
+            }
+            /* BUS Allways uses 16bits for addresses so use "fetch16()" */
             case I.BUS_SELECT: {
                 this.log("BUS Select");
                 const lit = this.fetch16();
@@ -150,22 +189,59 @@ export default class {
             }
             case I.BUS_READ_REG: {
                 this.log("Bus to REG");
+                const address = this.fetch16();
                 const reg = this.fetch();
-                const lit = this.fetch16();
-                const value = this.bus.read(lit)
-                this.setRegister(reg,value);
-                console.log("Move")
+                const value = this.bus.read(address)
+                this.setRegister8(reg,value);
                 return;
             }
             case I.BUS_WITE_LIT: {
                 this.log("Bus Write");
-                const val = this.fetch16();
-                const lit = this.fetch16();
-                this.bus.write(lit,val);
+                const val = this.fetch();
+                const address = this.fetch16();
+                this.bus.write(address,val);
                 return;
             }
-            case I.HLR: {
-                this.log("HALT");
+            case I.BUS_WITE_REG: {
+                this.log("Bus Write");
+                const regAddr = this.fetch();
+                const busAddr = this.fetch16();
+                const val = this.getRegister8(regAddr);
+                this.bus.write(busAddr,val);
+                return;
+            }
+
+            case I.BUS_READ_MEM: {
+                this.log("Bus to Mem");
+                const busAddr = this.fetch16();
+                const memAddr = this.fetch16();
+                const value = this.bus.read(busAddr);
+                this.setMem8(memAddr,value);
+                return;
+            }
+
+            case I.JMP_NEQ_LIT: {
+                this.log("JUMP");
+                const compare = this.fetch16();
+                const jmpAddr = this.fetch16();
+                const val = this.getRegister(R.ACC);
+                if (val != compare) {
+                    this.setRegister(R.IP, jmpAddr);
+                }
+                return;
+            }
+
+            case I.ADD_REG_LIT: {
+                const regAddr = this.fetch();
+                const value = this.fetch16();
+                const rval = this.getRegister(regAddr);
+
+                this.setRegister(R.ACC, value + rval);
+                return;
+            }
+
+            case I.HLT: {
+                console.log("HALT");
                 return true;
             }
         }
@@ -173,10 +249,12 @@ export default class {
 
 
     run() {
-        if (this.step() != true) {
-            requestAnimationFrame(() => {
+        const returnStatus = this.step();
+        console.log( returnStatus ? "true": "false");
+        if (returnStatus != true) {
+            setTimeout(() => {
                 this.run();
-            })
+            },0)
         } else {
             alert("System Halt!");
         }

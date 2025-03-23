@@ -33,4 +33,25 @@ export default class {
      * @abstract
      */
     read(address) {}
+
+
+    /**
+     * Used to write data to specified address.
+     * NOTE: Device is not required to respond to this call
+     * @param {number} address Address to write to.
+     * @param {number} value 16bit Value to write.
+     * @abstract
+     */
+    write16(address, value) {}
+
+    /**
+     * Used to read data from specified address.
+     * NOTE: Device is not required to respond to this call
+     * @param {number} address Address to write to.
+     * @returns {number} 16bit Value stored in that adress
+     * @abstract
+     */
+    read16(address) {
+        return 0;
+    }
 }

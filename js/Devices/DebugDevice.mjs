@@ -24,11 +24,11 @@ export default class DebugDevice extends Device {
     read(address) {        
         this.log("Read: " + address);
 
-        return this.d.getUint16(address);
+        return this.d.getUint8(address);
     } 
 
     write(address,value) {
         this.log("Write: " + address + " -> " + value);
-        this.d.setUint16(address,value);
+        this.d.setUint8(address,value);
     } 
 }
